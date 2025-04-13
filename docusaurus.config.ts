@@ -6,7 +6,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
   title: 'Peekaboo',
-  tagline: 'Dinosaurs are cool',
+  tagline: '我的博客',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
