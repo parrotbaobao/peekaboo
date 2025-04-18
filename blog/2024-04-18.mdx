@@ -1,0 +1,93 @@
+---
+slug: mdx-blog-post
+title: 使用 Docusaurus 博客部署 GitHub Pages之自动化 📝🚀
+authors: [bb]
+tags: [docusaurus, GitHub Pages]
+---
+
+## 第一步：在代码仓库中新建文件夹 🗂️
+
+1. 创建名为 `.github` 的文件夹 🖥️。
+2. 在 `.github` 文件夹中，创建一个名为 `workflows` 的子文件夹 🧑‍💻。
+3. 在 `workflows` 文件夹中，创建一个名为 `deploy.yml` 的文件，文件内容如下：
+
+```yaml
+name: Deploy to GitHub Pages 🌐
+
+on:
+  push:
+    branches:
+      - main
+    # 如果你想进一步定义触发器、路径等，可以查看 GitHub Actions 文档 🛠️
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#on
+
+jobs:
+  build:
+    name: Build Docusaurus 🛠️
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: yarn
+
+      - name: Install dependencies 📦
+        run: yarn install --frozen-lockfile
+      - name: Build website 🏗️
+        run: yarn build
+
+      - name: Upload Build Artifact 📂
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build
+
+  deploy:
+    name: Deploy to GitHub Pages 🚀
+    needs: build
+
+    # 授予 GITHUB_TOKEN 所需的权限以进行 Pages 部署 🔑
+    permissions:
+      pages: write # 进行 Pages 部署
+      id-token: write # 验证部署是否来源于适当的源
+
+    # 部署到 GitHub Pages 环境
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages 📤
+        id: deployment
+        uses: actions/deploy-pages@v4
+```
+
+在 `deploy.yml` 文件中，`branch` 设置为你要部署的分支 📂。
+
+---
+
+## 第二步：配置 GitHub 仓库 ⚙️
+
+1. 打开 GitHub 仓库的设置 ⚙️。
+2. 在左侧菜单中找到 `Pages` 选项 📄。
+3. 在 `Source` 部分选择 `main` 分支 🌿。
+
+---
+
+## 第三步：推送代码到 main 分支 🎉
+
+1. 推送代码到 `main` 分支后，GitHub Pages 会自动触发工作流 🏃‍♀️。
+2. 你可以在 `Actions` 选项卡中查看工作流的运行状态 📊。
+3. 如果工作流成功运行，你的 Docusaurus 博客将自动部署到 GitHub Pages 上 🌍。
+4. 你可以在 `Pages` 选项卡中查看你的博客地址 🔗。
+
+---
+
+### 在项目中几个分支的区别 🔄
+
+- **项目中的 `deploymentBranch`**：通常是指在代码中设置的目标分支，在这个分支上存放的是构建好的、可供浏览器访问的静态文件。通常配置为 `gh-pages` 📂。
+- **YML 文件中的 `branch`**：通常是指在 GitHub Actions 工作流中设置的触发分支，当这个分支有新的提交时，工作流会被触发。通常配置为 `main` 🎯。
+- **GitHub Pages 设置中的分支**：通常是指在 GitHub Pages 设置中选择的源分支，这个分支上的文件会被用来生成和托管你的 GitHub Pages 网站 🌐。通常配置为 `main` 🌱。
