@@ -1,18 +1,20 @@
 ---
 slug: bb-blog-2
-title: Docusaurus 部署 GitHub Pages（一）
+title: Docusaurus 部署 GitHub Pages（二）
 authors: [bb]
 tags: [docusaurus, GitHub Pages]
 ---
 
 ## 第一步：在代码仓库中新建文件夹 🗂️
 
-1. 创建名为 `.github` 的文件夹 🖥️。
+1. 在根目录创建名为 `.github` 的文件夹 🖥️。
 2. 在 `.github` 文件夹中，创建一个名为 `workflows` 的子文件夹 🧑‍💻。
 3. 在 `workflows` 文件夹中，创建一个名为 `deploy.yml` 的文件，文件内容如下：
 
+![我的图片](/img/githubfile.png)
+
 ```yaml
-name: Deploy to GitHub Pages 🌐
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -21,7 +23,7 @@ on:
 
 jobs:
   build:
-    name: Build Docusaurus 🛠️
+    name: Build Docusaurus
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -32,21 +34,21 @@ jobs:
           node-version: 18
           cache: yarn
 
-      - name: Install dependencies 📦
+      - name: Install dependencies
         run: yarn install --frozen-lockfile
-      - name: Build website 🏗️
+      - name: Build website
         run: yarn build
 
-      - name: Upload Build Artifact 📂
+      - name: Upload Build Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: build
 
   deploy:
-    name: Deploy to GitHub Pages 🚀
+    name: Deploy to GitHub Pages
     needs: build
 
-    # 授予 GITHUB_TOKEN 所需的权限以进行 Pages 部署 🔑
+    # 授予 GITHUB_TOKEN 所需的权限以进行 Pages 部署
     permissions:
       pages: write # 进行 Pages 部署
       id-token: write # 验证部署是否来源于适当的源
@@ -58,12 +60,10 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy to GitHub Pages 📤
+      - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
 ```
-
-在 `deploy.yml` 文件中，`branch` 设置为你要部署的分支 📂。
 
 ---
 
@@ -72,6 +72,11 @@ jobs:
 1. 打开 GitHub 仓库的设置 ⚙️。
 2. 在左侧菜单中找到 `Environment` 选项 📄。
 3. 在 `Deployment branches and tags` 部分选择 `Selected branches and tags` 分支 🌿。
+
+之后保存文件并提交到 GitHub 仓库中。
+- git add .
+- git commit -m "add deploy.yml"
+- git push origin main
 
 ---
 
