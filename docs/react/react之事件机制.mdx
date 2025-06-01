@@ -1,0 +1,165 @@
+---
+slug: react-event-mechanism
+title: React之事件机制
+authors: [bb]
+---
+
+React 的事件机制与原生 DOM 事件机制不同，它是 SyntheticEvent（合成事件） 系统。React 通过一套自己的事件机制模拟原生事件，从而实现跨浏览器兼容性、性能优化等。
+
+⸻
+
+🧠 1. React 为什么不直接用原生事件？
+	•	React 需要统一处理不同浏览器的事件差异。
+	•	React 实现了事件委托机制（只在最外层绑定一次），提升性能。
+	•	提供 事件池（事件复用） 等机制来减少内存开销（React 17 以前）。
+
+⸻
+
+🛠️ 2. React 的事件机制原理：一步步看
+
+🧩 第一步：事件绑定在 document 上
+
+React 不会给每个 DOM 节点绑定事件，而是把所有事件统一绑定到容器元素（例如 document 或 root div）上。
+
+// React 17 之前：绑定在 document 上
+```jsx
+document.addEventListener('click', dispatchEvent, false)
+```
+
+在源码中，你可以在 ReactDOM 源码中找到 legacyListenToAllSupportedEvents 方法负责注册事件。
+
+⸻
+
+🧩 第二步：事件代理（事件冒泡阶段统一处理）
+
+比如你写了：
+```jsx
+<button onClick={handleClick}>Click Me</button>
+
+React 并没有给这个 button 添加原生 click 事件，而是：
+	•	给 document 绑定了一个统一的 click 监听器。
+	•	当你点击 <button> 时，事件冒泡到 document，React 拦截事件并执行内部逻辑：
+
+function dispatchEvent(domEvent) {
+  // 创建一个合成事件对象
+  const syntheticEvent = createSyntheticEvent(domEvent)
+  // 获取目标元素的 Fiber 节点,就是找到你点击的那个元素对应的 React Fiber 节点
+  const targetFiberNode = getFiberFromDOM(domEvent.target)
+
+  // 从目标元素向上收集所有的监听函数（模拟冒泡）
+  let current = targetFiberNode
+  while (current !== null) {
+    // 收集当前 Fiber 节点上的所有事件监听器
+    collectListeners(current)
+    // 向上查找父节点
+    current = current.return
+  }
+
+  // 执行所有收集的事件监听器
+  invokeAllListeners(syntheticEvent)
+}
+```
+假如你有这样的组件结构
+```jsx
+div onClick={handleDivClick}>
+  <button onClick={handleButtonClick}>Click me</button>
+</div>
+```
+
+点击button时会发生以下的事情
+```jsx
+DOM 事件 => dispatchEvent(domEvent)
+          |
+          └─> createSyntheticEvent
+          └─> getFiberFromDOM(button)
+                    |
+                    ↓
+          [Fiber: button]
+          [Fiber: div]
+          [Fiber: root]
+          
+  收集监听器：
+  - handleButtonClick
+  - handleDivClick
+  
+  执行监听器：
+  - handleButtonClick(e)
+  - handleDivClick(e)
+```
+⸻
+
+🔁 3. SyntheticEvent（合成事件）
+
+React 不是直接传给你原生事件，而是包装了一层：
+```jsx
+const syntheticEvent = {
+  nativeEvent: originalEvent,
+  target: domEvent.target,
+  currentTarget: null,
+  isDefaultPrevented: false,
+  ...
+}
+```
+好处：
+	•	兼容各种浏览器。
+	•	加入一些自定义方法，比如 persist()、isPropagationStopped() 等。
+
+React 17 之前还有「事件池」机制（event pooling）：
+
+一个事件对象会被复用，用完后会被清空。
+
+所以你在事件回调中不能异步使用事件对象，除非你手动 .persist()。
+
+⸻
+
+🧪 4. 举个例子更清楚
+```jsx
+function App() {
+  function handleClick(e) {
+    console.log(e) // 这是 SyntheticEvent
+    console.log(e.nativeEvent) // 原生事件
+  }
+  return <div onClick={handleClick}>Click me</div>
+}
+```
+流程是这样的：
+  1.	你点击 "&lt;div&gt;"。
+	2.	原生事件冒泡到 document。
+	3.	React 拦截事件，创建 SyntheticEvent。
+  4.	向上模拟冒泡阶段，从 &lt;div&gt; 到 &lt;App&gt; 收集监听器。
+	5.	执行你的 handleClick 回调。
+
+⸻
+
+🆕 React 17+ 的变化
+
+React 17 后最大的变化是：事件绑定的位置从 document 移到了你自己提供的容器元素上（例如 root div）。
+
+这样做的好处是让 React 可以「更安全地嵌入到非 React 页面中」，不会影响外部的 document 事件。比如一些其他库。因为react会拦截所有的事件。
+
+举个例子
+```jsx
+<body>
+  <div id="root"></div>
+  <div id="other-lib-content"></div>
+</body>
+```
+```jsx
+// 以前 React 事件统一绑在 document 上
+ReactDOM.render(<App />, document.getElementById('root'))
+
+// React 17+
+document.getElementById('root')
+  .addEventListener('click', dispatchEvent)
+```
+
+
+⸻
+
+📝 总结一句话：
+
+React 的事件机制本质是“事件代理 + 合成事件”，通过在顶层监听所有事件，然后在内部模拟事件捕获和冒泡流程，把统一包装后的 SyntheticEvent 对象传给你的事件处理函数。
+
+⸻
+
+如果你想我继续带你看更详细源码（比如从源码入口一步步 trace），我可以继续深入讲。是否要继续深入？
