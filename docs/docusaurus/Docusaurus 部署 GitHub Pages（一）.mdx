@@ -2,19 +2,20 @@
 slug: bb-blog-1
 title: Docusaurus 部署 GitHub Pages（一）
 authors: [bb]
-tags: [docusaurus,GitHub Pages]
+tags: [docusaurus, GitHub Pages]
 ---
 
 ## 第一步：创建 GitHub Pages 仓库
 
 ### 🧱 新建仓库
+
 - 登录 GitHub，点击右上角的 `+` 按钮，选择 `New repository`。
 - 输入仓库名称，例如 `my-blog`，然后点击 `Create repository`。
-
 
 ## 第二步：安装 Docusaurus
 
 ### ⚙️ 安装
+
 - 确保你已安装 Node.js 和 npm。
 - 执行以下命令创建项目：
   ```bash
@@ -22,32 +23,32 @@ tags: [docusaurus,GitHub Pages]
   cd my-blog
   ```
 
-
 ## 第三步：配置 Docusaurus
 
 ### 🛠️ 修改 `docusaurus.config.js`
+
 ```js
 module.exports = {
-  url: 'https://<your-username>.github.io',
-  baseUrl: '/my-blog/',
-  organizationName: '<your-username>',
-  projectName: 'my-blog',
-  deploymentBranch: 'gh-pages',
+  url: "https://<your-username>.github.io",
+  baseUrl: "/my-blog/",
+  organizationName: "<your-username>",
+  projectName: "my-blog",
+  deploymentBranch: "gh-pages",
 };
 ```
-
 
 ## 第四步：本地预览
 
 ### 🚀 启动本地服务器
+
 ```bash
 npm run start
 ```
 
-
 ## 第五步：推送代码到 GitHub
 
 ### 🔗 初始化 Git 仓库并推送
+
 ```bash
 git init
 git add .
@@ -57,6 +58,7 @@ git remote add origin https://github.com/<your-username>/my-blog.git
 ```
 
 ### 🛡️ 使用 SSH 推送（可选）
+
 - 设置 SSH 地址：
   ```bash
   git remote set-url origin git@github.com:<your-username>/my-blog.git
@@ -74,24 +76,26 @@ git remote add origin https://github.com/<your-username>/my-blog.git
 - 测试 SSH 连接：
   ```bash
   ssh -T git@github.com
-    ```
-  
-
+  ```
 
 ## 第七步：部署到 GitHub Pages
 
 ### 📦 构建并部署
+
 如果你用的是SSH，输入命令构建：
+
 ```bash
 npm run deploy
 ```
 
 再输入命令将服务部署到GitHub Pages：
+
 ```bash
 USE_SSH=true yarn deploy
 ```
 
 如果你用的是HTTP，则输入以下命令
+
 ```bash
 GIT_USER=<Your GitHub username> yarn deploy
 ```

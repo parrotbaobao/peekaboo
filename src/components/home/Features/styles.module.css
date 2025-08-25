@@ -1,75 +1,110 @@
 .features {
-    padding: 4rem 0;
-    background-color: var(--ifm-background-color);
+    padding: 5rem 0;
+    background: #ffffff;
     position: relative;
 }
 
-.features::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 100%;
-    background: linear-gradient(135deg, var(--ifm-color-primary-lightest) 0%, var(--ifm-color-primary-lighter) 100%);
-    opacity: 0.05;
-    clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
-}
+
 
 .featureCard {
-    padding: 2rem;
+    padding: 2.5rem 2rem;
     border-radius: 8px;
-    background: var(--ifm-card-background-color);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: all 0.2s ease;
     height: 100%;
     display: flex;
     flex-direction: column;
     position: relative;
-    overflow: hidden;
     margin: 1rem;
+    border: 1px solid #e9ecef;
+    text-decoration: none;
+    color: inherit;
 }
 
+
+
 .featureCard:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-12px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    border-color: #6c757d;
+}
+
+.featureCard:hover::before {
+    transform: scaleX(1);
 }
 
 .featureIcon {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    color: var(--ifm-color-primary);
-    transition: transform 0.3s ease;
+    font-size: 3.5rem;
+    margin-bottom: 2rem;
+    color: #495057;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 1;
 }
 
 .featureCard:hover .featureIcon {
-    transform: scale(1.1);
+    transform: scale(1.15) rotate(8deg);
+    color: #212529;
 }
 
 .featureTitle {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    color: var(--ifm-color-emphasis-900);
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    color: #212529;
     position: relative;
+    z-index: 1;
+    letter-spacing: -0.02em;
 }
 
 .featureDescription {
-    color: var(--ifm-color-emphasis-700);
-    line-height: 1.6;
+    color: #6c757d;
+    line-height: 1.8;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
     flex-grow: 1;
+    font-size: 1rem;
+    position: relative;
+    z-index: 1;
+    font-weight: 400;
 }
 
+/* 响应式设计 */
 @media screen and (max-width: 768px) {
+    .features {
+        padding: 4rem 0;
+    }
+    
     .featureCard {
-        margin: 1rem;
+        margin: 0.5rem;
+        padding: 2rem;
     }
 
     .featureDescription {
         -webkit-line-clamp: 2;
+    }
+    
+    .featureIcon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .featureTitle {
+        font-size: 1.25rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .featureCard {
+        padding: 1.5rem;
+        margin: 0.25rem;
+    }
+    
+    .featureIcon {
+        font-size: 2rem;
     }
 }

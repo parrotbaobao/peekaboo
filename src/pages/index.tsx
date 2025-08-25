@@ -14,7 +14,7 @@ export default function Home(): ReactNode {
       title={siteConfig.title}
       description={siteConfig.tagline}>
       <HomepageHeader />
-      <main>
+      <main style={{ overflow: 'hidden' }}>
         <Features />
         <Categories />
       </main>

@@ -9,9 +9,9 @@ React 的事件机制与原生 DOM 事件机制不同，它是 SyntheticEvent（
 ⸻
 
 🧠 1. React 为什么不直接用原生事件？
-	•	React 需要统一处理不同浏览器的事件差异。
-	•	React 实现了事件委托机制（只在最外层绑定一次），提升性能。
-	•	提供 事件池（事件复用） 等机制来减少内存开销（React 17 以前）。
+• React 需要统一处理不同浏览器的事件差异。
+• React 实现了事件委托机制（只在最外层绑定一次），提升性能。
+• 提供 事件池（事件复用） 等机制来减少内存开销（React 17 以前）。
 
 ⸻
 
@@ -22,8 +22,9 @@ React 的事件机制与原生 DOM 事件机制不同，它是 SyntheticEvent（
 React 不会给每个 DOM 节点绑定事件，而是把所有事件统一绑定到容器元素（例如 document 或 root div）上。
 
 // React 17 之前：绑定在 document 上
+
 ```jsx
-document.addEventListener('click', dispatchEvent, false)
+document.addEventListener("click", dispatchEvent, false);
 ```
 
 在源码中，你可以在 ReactDOM 源码中找到 legacyListenToAllSupportedEvents 方法负责注册事件。
@@ -33,6 +34,7 @@ document.addEventListener('click', dispatchEvent, false)
 🧩 第二步：事件代理（事件冒泡阶段统一处理）
 
 比如你写了：
+
 ```jsx
 <button onClick={handleClick}>Click Me</button>
 
@@ -59,7 +61,9 @@ function dispatchEvent(domEvent) {
   invokeAllListeners(syntheticEvent)
 }
 ```
+
 假如你有这样的组件结构
+
 ```jsx
 div onClick={handleDivClick}>
   <button onClick={handleButtonClick}>Click me</button>
@@ -67,6 +71,7 @@ div onClick={handleDivClick}>
 ```
 
 点击button时会发生以下的事情
+
 ```jsx
 DOM 事件 => dispatchEvent(domEvent)
           |
@@ -77,20 +82,22 @@ DOM 事件 => dispatchEvent(domEvent)
           [Fiber: button]
           [Fiber: div]
           [Fiber: root]
-          
+
   收集监听器：
   - handleButtonClick
   - handleDivClick
-  
+
   执行监听器：
   - handleButtonClick(e)
   - handleDivClick(e)
 ```
+
 ⸻
 
 🔁 3. SyntheticEvent（合成事件）
 
 React 不是直接传给你原生事件，而是包装了一层：
+
 ```jsx
 const syntheticEvent = {
   nativeEvent: originalEvent,
@@ -100,9 +107,10 @@ const syntheticEvent = {
   ...
 }
 ```
+
 好处：
-	•	兼容各种浏览器。
-	•	加入一些自定义方法，比如 persist()、isPropagationStopped() 等。
+• 兼容各种浏览器。
+• 加入一些自定义方法，比如 persist()、isPropagationStopped() 等。
 
 React 17 之前还有「事件池」机制（event pooling）：
 
@@ -113,21 +121,24 @@ React 17 之前还有「事件池」机制（event pooling）：
 ⸻
 
 🧪 4. 举个例子更清楚
+
 ```jsx
 function App() {
   function handleClick(e) {
-    console.log(e) // 这是 SyntheticEvent
-    console.log(e.nativeEvent) // 原生事件
+    console.log(e); // 这是 SyntheticEvent
+    console.log(e.nativeEvent); // 原生事件
   }
-  return <div onClick={handleClick}>Click me</div>
+  return <div onClick={handleClick}>Click me</div>;
 }
 ```
+
 流程是这样的：
-  1.	你点击 "&lt;div&gt;"。
-	2.	原生事件冒泡到 document。
-	3.	React 拦截事件，创建 SyntheticEvent。
-  4.	向上模拟冒泡阶段，从 &lt;div&gt; 到 &lt;App&gt; 收集监听器。
-	5.	执行你的 handleClick 回调。
+
+1. 你点击 "&lt;div&gt;"。
+2. 原生事件冒泡到 document。
+3. React 拦截事件，创建 SyntheticEvent。
+4. 向上模拟冒泡阶段，从 &lt;div&gt; 到 &lt;App&gt; 收集监听器。
+5. 执行你的 handleClick 回调。
 
 ⸻
 
@@ -138,21 +149,21 @@ React 17 后最大的变化是：事件绑定的位置从 document 移到了你�
 这样做的好处是让 React 可以「更安全地嵌入到非 React 页面中」，不会影响外部的 document 事件。比如一些其他库。因为react会拦截所有的事件。
 
 举个例子
+
 ```jsx
 <body>
   <div id="root"></div>
   <div id="other-lib-content"></div>
 </body>
 ```
+
 ```jsx
 // 以前 React 事件统一绑在 document 上
-ReactDOM.render(<App />, document.getElementById('root'))
+ReactDOM.render(<App />, document.getElementById("root"));
 
 // React 17+
-document.getElementById('root')
-  .addEventListener('click', dispatchEvent)
+document.getElementById("root").addEventListener("click", dispatchEvent);
 ```
-
 
 ⸻
 

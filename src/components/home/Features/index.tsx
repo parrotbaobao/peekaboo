@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCode, faBook, faLightbulb } from '@fortawesome/free-solid-svg-icons';
 
 import styles from './styles.module.css';
+import Link from '@docusaurus/Link';
 
 export default function Features(): JSX.Element {
     return (
@@ -10,13 +11,13 @@ export default function Features(): JSX.Element {
             <div className="container">
                 <div className="row">
                     <div className="col col--4">
-                        <div className={styles.featureCard}>
+                        <Link to="docs/other" className={styles.featureCard}>
                             <FontAwesomeIcon icon={faCode} className={styles.featureIcon} />
                             <h3 className={styles.featureTitle}>技术笔记</h3>
                             <p className={styles.featureDescription}>
                                 记录学习过程中的技术要点和最佳实践
                             </p>
-                        </div>
+                        </Link>
                     </div>
                     <div className="col col--4">
                         <div className={styles.featureCard}>

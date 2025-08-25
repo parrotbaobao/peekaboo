@@ -1,6 +1,13 @@
 .categories {
-    padding: 4rem 0;
+    padding: 8rem 0;
     position: relative;
+    background: linear-gradient(135deg, 
+        #ffffff 0%, 
+        #f8f9fa 25%, 
+        #e9ecef 50%, 
+        #f8f9fa 75%, 
+        #ffffff 100%);
+    overflow: hidden;
 }
 
 .categories::before {
@@ -10,68 +17,192 @@
     left: 0;
     right: 0;
     height: 100%;
-    background: linear-gradient(135deg, var(--ifm-color-primary-lightest) 0%, var(--ifm-color-primary-lighter) 100%);
-    opacity: 0.05;
-    clip-path: polygon(0 15%, 100% 0, 100% 100%, 0 100%);
+    background: 
+        radial-gradient(circle at 10% 20%, rgba(0, 0, 0, 0.02) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(0, 0, 0, 0.01) 0%, transparent 40%);
+    opacity: 1;
+    animation: backgroundPulse 15s ease-in-out infinite;
+}
+
+@keyframes backgroundPulse {
+    0%, 100% {
+        opacity: 0.2;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.3;
+        transform: scale(1.02);
+    }
 }
 
 .categoryGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
-    margin-top: 2rem;
+    margin-top: 3rem;
     padding: 0 1rem;
+    position: relative;
+    z-index: 1;
 }
 
 .categoryCard {
     position: relative;
-    padding: 2rem;
-    border-radius: 8px;
-    background: var(--ifm-card-background-color);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 3.5rem 2.5rem;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
     overflow: hidden;
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     height: 100%;
     display: flex;
     flex-direction: column;
-    margin: 1rem;
+    margin: 0;
     text-decoration: none;
+    color: inherit;
+    border: 1px solid #e9ecef;
+    min-height: 220px;
+    backdrop-filter: blur(10px);
+}
+
+.categoryCard::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+        rgba(0, 0, 0, 0.02) 0%, 
+        transparent 50%, 
+        rgba(0, 0, 0, 0.01) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.categoryCard::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, 
+        #495057 0%, 
+        #6c757d 50%, 
+        #495057 100%);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
 }
 
 .categoryCard:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-12px);
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.12);
+    border-color: #6c757d;
+}
+
+.categoryCard:hover::before {
+    opacity: 0.1;
+}
+
+.categoryCard:hover::after {
+    transform: scaleX(1);
+}
+
+.categoryIcon {
+    font-size: 3.5rem;
+    margin-bottom: 2rem;
+    color: #495057;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 1;
+    text-align: center;
+}
+
+.categoryCard:hover .categoryIcon {
+    transform: scale(1.15) rotate(8deg);
+    color: #212529;
 }
 
 .categoryTitle {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    color: var(--ifm-color-emphasis-900);
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    color: #212529;
     position: relative;
+    z-index: 1;
+    letter-spacing: -0.02em;
+    transition: color 0.3s ease;
+    text-align: center;
+}
+
+.categoryCard:hover .categoryTitle {
+    color: #000000;
 }
 
 .categoryDescription {
     color: var(--ifm-color-emphasis-700);
     margin-bottom: 1rem;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
     flex-grow: 1;
+    position: relative;
+    z-index: 1;
+    line-height: 1.6;
+    font-size: 0.95rem;
+    text-align: center;
 }
 
+/* 响应式设计 */
 @media screen and (max-width: 768px) {
+    .categories {
+        padding: 4rem 0;
+    }
+    
+    .categoryGrid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 0 1rem;
+        margin-top: 2rem;
+    }
+    
     .categoryCard {
-        margin: 1rem;
+        margin: 0;
+        padding: 2rem 1.5rem;
+        min-height: 160px;
     }
 
     .categoryDescription {
         -webkit-line-clamp: 2;
     }
+    
+    .categoryTitle {
+        font-size: 1.5rem;
+    }
+    
+    .categoryIcon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+}
 
-    .categoryGrid {
-        grid-template-columns: 1fr;
-        padding: 0 1rem;
+@media screen and (max-width: 480px) {
+    .categoryCard {
+        padding: 1.5rem 1rem;
+        min-height: 140px;
+    }
+    
+    .categoryTitle {
+        font-size: 1.25rem;
+    }
+    
+    .categoryDescription {
+        font-size: 0.9rem;
+    }
+    
+    .categoryIcon {
+        font-size: 2rem;
     }
 }
